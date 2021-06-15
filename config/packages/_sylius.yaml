@@ -262,3 +262,4 @@ sylius_resource:
             classes:
                 model: App\Entity\RefundPayment
                 interface: App\Entity\RefundPaymentInterface
+                factory: App\Factory\RefundPaymentFactory
