@@ -7,7 +7,7 @@ services:
     # Default configuration for services in *this* file
     _defaults:
         # Automatically injects dependencies in your services
-        autowire: true
+        autowire: false
 
         # Automatically registers your services as commands, event subscribers, etc.
         autoconfigure: true
@@ -38,3 +38,32 @@ services:
     App\Factory\RefundPaymentFactory:
         arguments:
             - '@Sylius\RefundPlugin\Factory\RefundPaymentFactoryInterface'
+            - '@sylius.repository.payment_method'
+        
+    Sylius\RefundPlugin\Creator\RefundUnitsCommandCreatorInterface:
+        class: App\Creator\RefundUnitsCommandCreator
+        arguments:
+            - '@Sylius\RefundPlugin\Calculator\UnitRefundTotalCalculatorInterface'
+                
+    Sylius\RefundPlugin\CommandHandler\RefundUnitsHandler:
+        class: App\CommandHandler\RefundUnitsHandler
+        arguments:
+            - '@Sylius\RefundPlugin\Refunder\OrderItemUnitsRefunder'
+            - '@Sylius\RefundPlugin\Refunder\OrderShipmentsRefunder'
+            - '@sylius.event_bus'
+            - '@sylius.repository.order'
+            - '@Sylius\RefundPlugin\Validator\RefundUnitsCommandValidatorInterface'
+        tags:
+            - { name: messenger.message_handler, bus: sylius.command_bus }
+        
+    Sylius\RefundPlugin\ProcessManager\RefundPaymentProcessManager:
+        class: App\ProcessManager\RefundPaymentProcessManager
+        arguments:
+            - '@Sylius\RefundPlugin\StateResolver\OrderFullyRefundedStateResolverInterface'
+            - '@Sylius\RefundPlugin\Provider\RelatedPaymentIdProviderInterface'
+            - '@App\Factory\RefundPaymentFactory'
+            - '@sylius.repository.order'
+            - '@doctrine.orm.default_entity_manager'
+            - '@sylius.event_bus'
+        tags:
+            - {name: sylius_refund.units_refunded.process_step, priority: 50}
