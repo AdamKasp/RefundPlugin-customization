@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use Sylius\RefundPlugin\Command\RefundUnitsInterface;
 use Sylius\RefundPlugin\Command\RefundUnits as baseRefundUnits;
 
-final class RefundUnits extends baseRefundUnits implements RefundUnitsInterface
+final class RefundUnits extends baseRefundUnits
 {
     /** @var \DateTime|null */
     private $futureDate;

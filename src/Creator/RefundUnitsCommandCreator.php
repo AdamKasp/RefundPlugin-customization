@@ -6,7 +6,7 @@ namespace App\Creator;
 
 use App\Command\RefundUnits;
 use Sylius\RefundPlugin\Calculator\UnitRefundTotalCalculatorInterface;
-use Sylius\RefundPlugin\Command\RefundUnitsInterface;
+use Sylius\RefundPlugin\Command\RefundUnits as BaseRefundUnits;
 use Sylius\RefundPlugin\Creator\RefundUnitsCommandCreatorInterface;
 use Sylius\RefundPlugin\Exception\InvalidRefundAmount;
 use Sylius\RefundPlugin\Model\OrderItemUnitRefund;
@@ -26,7 +26,7 @@ final class RefundUnitsCommandCreator implements RefundUnitsCommandCreatorInterf
         $this->unitRefundTotalCalculator = $unitRefundTotalCalculator;
     }
 
-    public function fromRequest(Request $request): RefundUnitsInterface
+    public function fromRequest(Request $request): BaseRefundUnits
     {
         Assert::true($request->attributes->has('orderNumber'), 'Refunded order number not provided');
 
@@ -43,7 +43,8 @@ final class RefundUnitsCommandCreator implements RefundUnitsCommandCreatorInterf
 
         /** @var string $comment */
         $comment = $request->request->get('sylius_refund_comment', '');
-        return new RefundUnits(
+
+        $test = new RefundUnits(
             $request->attributes->get('orderNumber'),
             $this->parseIdsToUnitRefunds($units, RefundType::orderItemUnit(), OrderItemUnitRefund::class),
             $this->parseIdsToUnitRefunds($shipments, RefundType::shipment(), ShipmentRefund::class),
@@ -51,6 +52,8 @@ final class RefundUnitsCommandCreator implements RefundUnitsCommandCreatorInterf
             $comment,
             new \DateTime($request->request->get('sylius_future_date'))
         );
+
+        return $test;
     }
 
     /**
