@@ -1,2 +1,10 @@
 imports:
     - { resource: "@SyliusRefundPlugin/Resources/config/app/config.yml" }
+
+sylius_resource:
+    resources:
+        sylius_refund.refund_payment:
+            classes:
+                model: App\Entity\RefundPayment
+                interface: App\Entity\RefundPaymentInterface
+                factory: App\Factory\RefundPaymentFactory
